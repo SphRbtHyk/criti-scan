@@ -1,4 +1,4 @@
-# CritiScan  🚀🤓
+# The criti-scan project  🚀🤓
 
 ![logo](https://github.com/SphRbtHyk/criti-scan/blob/24dee13365fda4216f61271b2160c590bec76771/public/logo.jpg)
 
@@ -14,12 +14,36 @@ Version 0.0 focuses exclusively on the main text and currently ignores the criti
 
 ## Installation
 
+⚠️⚠️ Tesseract must be installed beforehand (refer to Tesseract documentation for instructions). 
+⚠️⚠️ The wanted models for the Tesseract's OCR model must be downloaded from the available ressources, and put in the folder **tessdata**.
+
+Once installed, you can git clone this repository, and install it as a standard Python package:
+
+```bash
+git clone git@github.com:SphRbtHyk/criti-scan.git
+
+cd criti-scan
+
+pip install .
+```
+
 ## Use
 
 CritiScan is usable through an easy to use CLI, that requires as input the path to the PDF to scan, the language of the text, the format of the expected output, as well as its path. Optionally, a user can specify is the text is versified and if the algorithm should try to figure out the verse cut-off of the texts.
 
-```
-criti-scan
+```bash
+criti-scan input.pdf output.txt \
+  --language grc \
+  --tessdata-dir /path/to/tessdata
 ```
 
+For example, you can run the following toy example at the root of thie repository:
+
+```bash
+criti-scan tests/test_data/test_pdf.pdf output.txt -l grc -t tessdata/
+```
+
+
 ## Incoming!
+
+Incoming work will include the possibility to detect the apparatus and reconstruct variant readings automatically.

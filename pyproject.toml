@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "criti-scan"
+version = "0.0.0"
+dependencies = [
+    "pytesseract",
+    "pdf2image",
+    "opencv-python",
+    "numpy",
+    "loguru",
+    "matplotlib",
+    "click"
+]
+requires-python = ">=3.9"
+authors = [
+  {name = "Sophie Robert-Hayek", email = "sophie.robert@univ-lorraine.fr"}
+]
+description = "Python library to OCR critical editions."
+license = "MIT"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/criti_scan"]
+
+[project.scripts]
+criti-scan = "criti_scan.scan:scan"
