@@ -18,11 +18,15 @@ from criti_scan.ocr import OCRText
               help='Path to the directory containing the tessdata.')
 @click.option('--rm-temp-dir/--keep-temp-dir', default=True,
               help='Whether to remove intermediate files after OCR (default: remove).')
+@click.option('--versify',
+              is_flag=True,
+              default=False, help='Whether the text should be split in verses.')
 def scan(pdf_path: str,
          language: str,
          tessdata_dir: str,
          output_path: str,
-         rm_temp_dir: bool = True):
+         rm_temp_dir: bool = True,
+         versify: bool = False):
     """Given the path to a PDF file, perform the extraction of the images and
     perform the OCRing.
 
@@ -33,6 +37,8 @@ def scan(pdf_path: str,
         output_path (str): The path to write down the OCR content.
         rm_temp_dir (bool, defaults to True): Whether or not intermediate data
             should be removed.
+        versify (bool, defaults to True): Whether or not the text is
+            versified.
     """
     logger.info(f"Process PDF in {pdf_path}")
     # Perform the image extraction
@@ -48,7 +54,8 @@ def scan(pdf_path: str,
         # Perform the OCR on the selected zone
         ocr = OCRText(zone,
                       language=language,
-                      tessdata_dir=tessdata_dir).run_ocr()
+                      tessdata_dir=tessdata_dir,
+                      versify=versify).run_ocr()
 
         # Concatenate the output
         outputs.append(ocr)
