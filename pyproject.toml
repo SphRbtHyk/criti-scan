@@ -12,7 +12,10 @@ dependencies = [
     "numpy",
     "loguru",
     "matplotlib",
-    "click"
+    "click",
+    "scipy",
+    "moderngl",
+    "sympy"
 ]
 requires-python = ">=3.9"
 authors = [
@@ -26,3 +29,9 @@ packages = ["src/criti_scan"]
 
 [project.scripts]
 criti-scan = "criti_scan.scan:scan"
+
+[project.optional-dependencies]
+dev = [
+  "flake8>=7.2.0",
+  "pytest>=8.3.5"
+]

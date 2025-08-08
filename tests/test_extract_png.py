@@ -3,7 +3,7 @@ import unittest
 import shutil
 import os
 from pathlib import Path
-from criti_scan.extract_png import PNGExtracter
+from criti_scan.ocr.extract_png import PNGExtracter
 
 
 DATA_PATH = Path(__file__).parent.resolve() / "test_data"
