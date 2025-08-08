@@ -1,0 +1,36 @@
+name: Unittests and lint
+
+on: push
+
+jobs:
+    unittest:
+        name: Run the unit tests and linter
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                python-version: 
+                  - "3.12"
+                  - "3.11"
+                  - "3.10"
+        steps:
+            - name: Chekout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v5
+              with:
+                python-version: ${{ matrix.python-version }}
+      
+            - name: Install dependencies
+              run: |
+                sudo apt-get update
+                sudo apt-get install -y poppler-utils
+                python -m pip install .[dev]
+                
+            - name: Run unit tests
+              run: | 
+                pytest
+
+            - name: Run linter
+              run: | 
+                flake8 src/criti_scan
