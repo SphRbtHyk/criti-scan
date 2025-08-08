@@ -1,6 +1,6 @@
 """Module for OCRing the critical edition."""
 
-
+import re
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,7 +20,8 @@ class OCRText:
     def __init__(self,
                  image: np.ndarray,
                  language: str,
-                 tessdata_dir: str
+                 tessdata_dir: str,
+                 versify: bool = False
                  ):
         """
         Initializes the OCRText class with a given image.
@@ -30,10 +31,12 @@ class OCRText:
             language (str): The language of the OCRed text.
             tessdata_dir (str): The directory where the data for tesseract is
                 located.
+            versify (bool): Whether or not the text contains verses.
         """
         self.image = image
         self.language = language
-        self.tessdata_dir = tessdata_dir        
+        self.tessdata_dir = tessdata_dir
+        self.versify = versify
 
     def _to_grayscale(self, img: np.ndarray) -> np.ndarray:
         """Converts a color image to grayscale if needed."""
@@ -109,34 +112,54 @@ class OCRText:
 
     @staticmethod
     def clean_text(text: str,
-                   removed_symbols: list[str] = ["!","-\n","Γ","-","“",'"']):
+                   versify: bool = False,
+                   removed_symbols:
+                   list[str] = ["!", "-\n", "Γ", "-", "“", '"', "]","!"]) -> str:
         """Clean the text outputted by Tesseract.
-        
+
         Args:
             text (str): The text to clean.
+            versity (bool, defaults to False): If set to True, then split the
+                text on numbers.
             removed_symbols (list[str]): The symbols to remove from the text.
         """
-        cleaned_text = "".join([word for word in text if word not in removed_symbols])
-        return cleaned_text.replace("\n", " ")
+        #TODO: remove -\n symbols
+        # Remove symbols
+        cleaned_text = "".join(
+            [letter for letter in text if letter not in removed_symbols])
+        # Remove the linebreaks
+        cleaned_text = cleaned_text.replace("\n", " ")
+        # Split on numbers if versify is set to true
+        if versify:
+            cleaned_text = "\n".join(re.split(r'(\d+)', cleaned_text))
+        return cleaned_text
 
     def run_ocr(self,
-                output_path: Optional[str] = None) -> str:
+                output_path: Optional[str] = None,
+                preprocess_img: bool = False) -> str:
         """
         Runs Tesseract OCR on the preprocessed image.
 
         Args:
             output_path (str, Optional): If specified, where to write the
                 output of the tesseract extraction.
-
+            preprocess_img (bool, defaults to False): Whether or not the image
+                should be pre-processed.
+                
         Returns:
             str: The OCR-extracted text.
         """
+        # Whitelist number -c tessedit_char_unblacklist=0123456789
         config = f'--tessdata-dir {self.tessdata_dir}'
-        preprocess = self.preprocess()
-        string_output = pytesseract.image_to_string(preprocess,
-                                           lang=self.language,
-                                           config=config)
-        output_text = self.clean_text(string_output)
+        if preprocess_img:
+            image = self.preprocess()
+        else:
+            image = self.image
+        string_output = pytesseract.image_to_string(image,
+                                                    lang=self.language,
+                                                    config=config)
+        output_text = self.clean_text(string_output,
+                                      versify=self.versify)
         if output_path:
             with open(output_path, 'w') as f:
                 f.write(
